@@ -1,7 +1,32 @@
+# Arquivos de ambiente virtual
 venv/
+
+# Arquivos de vídeo baixados
 *.mp4
 *.avi
 *.mov
 *.mkv
+
+# Credenciais e tokens
 credentials.json
 *.pickle
+
+# Arquivos de cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de log
+*.log
+
+# Arquivos de banco de dados
+*.sqlite3
+*.db
+
+# Arquivos de configuração de IDEs
+.vscode/
+.idea/
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db

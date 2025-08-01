@@ -17,7 +17,7 @@ def buscar_links_youtube(termos, quantidade_de_links_validos=5):
         for termo in termos:
             print(f"\nBuscando vídeos para: {termo}")
             # url = f"https://www.youtube.com/results?search_query={termo}&sp=EgQIBRAB"  # Filtro: Hoje + Ordenar por: Visualizações
-            url = f"https://www.youtube.com/results?search_query={termo}&sp=CAISBAgFEAE%253D"  # Filtro: Hoje + Ordenar por: Visualizações
+            url = f"https://www.youtube.com/results?search_query={termo}&sp=CAISBAgFEAE%253D"  # Filtro: Este Ano + Ordenar por: Visualizações
             print(f"URL: {url}")
             page.goto(url)
             time.sleep(2)

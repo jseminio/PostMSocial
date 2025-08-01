@@ -5,7 +5,7 @@ import yt_dlp
 
 def buscar_links_youtube_24h_mais_vistos(quantidade_de_links_validos=5):
     """
-    Busca links dos vídeos mais visualizados nas últimas 24h no YouTube.
+    Busca os links dos vídeos mais visualizados nas últimas 24h no YouTube.
     Parâmetros:
         quantidade_de_links_validos (int): quantidade máxima de links válidos
     Retorna:
