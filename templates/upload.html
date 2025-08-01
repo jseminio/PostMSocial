@@ -3,9 +3,24 @@
 {% block content %}
     <h1>Upload para YouTube</h1>
     <p>Esta página irá iniciar o processo de upload de todos os vídeos na pasta de downloads.</p>
-    <form action="/run-upload" method="post">
+    <form id="upload-form">
         <button type="submit">Iniciar Upload</button>
     </form>
     <h2>Log de Atividades</h2>
     <pre id="log"></pre>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/run-upload', {
+                method: 'POST'
+            });
+            setInterval(function() {
+                fetch('/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('log').textContent = data.log;
+                    });
+            }, 2000);
+        });
+    </script>
 {% endblock %}

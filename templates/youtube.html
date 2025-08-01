@@ -2,13 +2,132 @@
 {% block title %}YouTube Downloader{% endblock %}
 {% block content %}
     <h1>YouTube Downloader</h1>
-    <form action="/run-youtube-download" method="post">
+    <form id="youtube-form">
         <label for="terms">Termos de busca (separados por vírgula):</label>
         <input type="text" id="terms" name="terms" required>
         <label for="quantity">Quantidade de vídeos por termo:</label>
-        <input type="number" id="quantity" name="quantity" value="5" required>
-        <button type="submit">Baixar Vídeos</button>
+        <input type="number" id="quantity" name="quantity" value="5" required min="1">
+        <button type="submit" id="download-button">Baixar Vídeos</button>
     </form>
+    <div id="message-area" style="margin-top: 10px; font-weight: bold;"></div>
     <h2>Log de Atividades</h2>
     <pre id="log"></pre>
+
+    <h2>Vídeos Baixados</h2>
+    <div id="downloaded-videos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+        <!-- Videos will be rendered here -->
+    </div>
+
+    <script>
+        const form = document.getElementById('youtube-form');
+        const downloadButton = document.getElementById('download-button');
+        const termsInput = document.getElementById('terms');
+        const quantityInput = document.getElementById('quantity');
+        const logArea = document.getElementById('log');
+        const messageArea = document.getElementById('message-area');
+        const downloadedVideosGrid = document.getElementById('downloaded-videos-grid');
+        let statusInterval;
+
+        function renderDownloadedVideos(videos) {
+            downloadedVideosGrid.innerHTML = ''; // Clear previous content
+            if (videos && videos.length > 0) {
+                videos.forEach(video => {
+                    const videoCard = document.createElement('div');
+                    videoCard.style.border = '1px solid #ccc';
+                    videoCard.style.padding = '15px';
+                    videoCard.style.borderRadius = '8px';
+                    videoCard.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                    videoCard.innerHTML = `
+                        <h3>${video.title}</h3>
+                        <p><strong>URL:</strong> <a href="${video.url}" target="_blank">${video.url}</a></p>
+                        <p><strong>Status:</strong> ${video.status}</p>
+                        <p><strong>Caminho:</strong> ${video.filepath}</p>
+                    `;
+                    downloadedVideosGrid.appendChild(videoCard);
+                });
+            }
+        }
+
+        function updateStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    logArea.textContent = data.log;
+                    renderDownloadedVideos(data.downloaded_videos);
+
+                    if (data.running) {
+                        downloadButton.disabled = true;
+                        messageArea.style.color = 'orange';
+                        messageArea.textContent = 'Processando... Por favor, aguarde.';
+                    } else {
+                        downloadButton.disabled = false;
+                        clearInterval(statusInterval);
+                        if (data.message) {
+                            messageArea.style.color = 'green';
+                            messageArea.textContent = data.message;
+                        } else if (data.error) {
+                            messageArea.style.color = 'red';
+                            messageArea.textContent = data.error;
+                        } else {
+                            messageArea.textContent = ''; // Clear message if no specific status
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar status:', error);
+                    messageArea.style.color = 'red';
+                    messageArea.textContent = 'Erro ao conectar com o servidor de status.';
+                    downloadButton.disabled = false;
+                    clearInterval(statusInterval);
+                });
+        }
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Basic validation
+            if (!termsInput.value.trim()) {
+                messageArea.style.color = 'red';
+                messageArea.textContent = 'Por favor, insira os termos de busca.';
+                return;
+            }
+            if (parseInt(quantityInput.value) < 1) {
+                messageArea.style.color = 'red';
+                messageArea.textContent = 'A quantidade de vídeos deve ser no mínimo 1.';
+                return;
+            }
+
+            messageArea.textContent = ''; // Clear previous messages
+            logArea.textContent = ''; // Clear previous log
+            downloadedVideosGrid.innerHTML = ''; // Clear previous videos
+            downloadButton.disabled = true;
+            messageArea.style.color = 'orange';
+            messageArea.textContent = 'Iniciando download...';
+
+            const formData = new FormData(this);
+            fetch('/run-youtube-download', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    statusInterval = setInterval(updateStatus, 2000);
+                } else {
+                    messageArea.style.color = 'red';
+                    messageArea.textContent = 'Falha ao iniciar o download.';
+                    downloadButton.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao iniciar download:', error);
+                messageArea.style.color = 'red';
+                messageArea.textContent = 'Erro ao enviar requisição de download.';
+                downloadButton.disabled = false;
+            });
+        });
+
+        // Initial status check when page loads
+        updateStatus();
+    </script>
 {% endblock %}

@@ -7,17 +7,17 @@ from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 from googleapiclient.errors import HttpError
 
-#  Importante: Instale as dependências necessárias
-# Escopo necessário para upload de vídeo
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-
 # Constrói os caminhos absolutos para os arquivos de credenciais e downloads
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, "../credenciais/credentials.json")
 CREDENTIALS_PICKLE = os.path.join(BASE_DIR, "../credenciais/youtube_token.pickle")
 DOWNLOADS_DIR = os.path.join(BASE_DIR, "../downloads")
+SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 def get_authenticated_service():
+    """
+    Autentica o usuário com a API do YouTube usando OAuth 2.0.
+    """
     creds = None
     if os.path.exists(CREDENTIALS_PICKLE):
         with open(CREDENTIALS_PICKLE, "rb") as token:
@@ -33,6 +33,9 @@ def get_authenticated_service():
     return build("youtube", "v3", credentials=creds)
 
 def upload_video(youtube, file_path, title, description="", tags=None, categoryId="22", privacyStatus="private"):
+    """
+    Faz o upload de um arquivo de vídeo para o YouTube.
+    """
     body = {
         "snippet": {
             "title": title,
@@ -59,25 +62,20 @@ def upload_video(youtube, file_path, title, description="", tags=None, categoryI
         print(f"✅ Upload finalizado: {title}")
     except HttpError as e:
         print(f"❌ Erro durante o upload do vídeo '{title}':\n{e}")
-        print("\n⚠️ Verifique se a API YouTube Data API v3 está ativada neste link:")
-        print("https://console.developers.google.com/apis/api/youtube.googleapis.com/overview")
-        print("➡️ Aguarde alguns minutos após ativar antes de tentar novamente.")
         return None
     return response
 
-def main():
+def run_youtube_uploader():
     """
-    Função principal que automatiza o processo de upload de vídeos para o YouTube.
-
-    Primeiro, obtém um serviço autenticado da API do YouTube. Em seguida, procura por arquivos .mp4
-    no diretório de downloads. Para cada vídeo encontrado, ele extrai um título do nome do arquivo
-    e chama a função `upload_video` para enviá-lo ao YouTube com configurações padrão.
+    Executa o processo de upload de todos os vídeos na pasta de downloads para o YouTube.
     """
+    print("Iniciando processo de upload para o YouTube...")
     youtube = get_authenticated_service()
     video_files = glob.glob(os.path.join(DOWNLOADS_DIR, "*.mp4"))
     if not video_files:
         print("Nenhum vídeo encontrado na pasta de downloads.")
         return
+
     for video in video_files:
         title = os.path.splitext(os.path.basename(video))[0]
         print(f"\n🚀 Iniciando upload do vídeo: {title}")
@@ -87,9 +85,10 @@ def main():
             title=title,
             description="Upload automático via API",
             tags=["automático", "youtube", "api"],
-            categoryId="22",  # 22 = People & Blogs
-            privacyStatus="public"  # Altere para 'public' se desejar
+            categoryId="22",
+            privacyStatus="private"
         )
+    print("\nProcesso de upload concluído.")
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    run_youtube_uploader()
