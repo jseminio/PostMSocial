@@ -63,6 +63,14 @@ def baixar_videos(links):
             print(f"Erro ao baixar {link}: {e}")
 
 def main():
+    """
+    Função principal que gerencia a busca e o download de vídeos do YouTube.
+
+    Este loop interativo solicita ao usuário os termos de busca e a quantidade de vídeos desejada.
+    Ele chama a função `buscar_links_youtube` para obter a lista de vídeos, exibe os links
+    encontrados e, em seguida, chama `baixar_videos` para iniciar o download.
+    O processo se repete até que o usuário decida sair.
+    """
     while True:
         print("\nDigite os termos (hashtags ou palavras) para buscar vídeos no YouTube, separados por vírgula (ex: futebol,tecnologia):")
         termos_input = input().strip()

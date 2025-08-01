@@ -82,7 +82,7 @@ def baixar_videos(links):
     """
     Baixa vídeos dos links informados usando yt-dlp na pasta downloads.
     """
-    download_dir = os.path.join(os.path.dirname(__file__), 'downloads')
+    download_dir = os.path.join(os.path.dirname(__file__), '../downloads')
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
     ydl_opts = {
@@ -101,6 +101,14 @@ def baixar_videos(links):
             print(f"Erro ao baixar {link}: {e}")
 
 def main():
+    """
+    Função principal que orquestra o processo de download de vídeos do TikTok.
+
+    Este loop interativo primeiro busca e exibe as hashtags em alta. Em seguida, solicita ao usuário
+    que escolha as hashtags e a quantidade de vídeos a serem baixados. Com base na entrada,
+    chama as funções para obter os links dos vídeos e, finalmente, baixá-los.
+    O loop continua até que o usuário decida parar.
+    """
     while True:
         tags = get_trending_hashtags_with_views()
         print("\nHashtags virais do dia:")

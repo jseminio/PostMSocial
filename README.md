@@ -38,21 +38,17 @@ git pull origin main  # Ou o nome da branch principal
 ├─── requirements.txt
 ├─── controles/
 │    ├─── downloadtiktok.py
-│    ├─── downloadyoutube_v1.py
 │    ├─── downloadyoutube.py
-│    ├─── downloadyoutube24henviadoemaisvistos.py
-│    ├─── downloadyoutube24hmaisvistos.py
-│    ├─── downloadyoutubecomdescricoesdetalhada.py
-│    ├─── postautomaticoyoutube.py
-│    └─── downloads/
+│    └─── postautomaticoyoutube.py
+├─── credenciais/
+│    └─── (coloque seu credentials.json aqui)
+├─── downloads/
+│    └─── (os vídeos baixados aparecerão aqui)
 └─── venv/
 ```
 
 -   **`controles/`**: Contém os scripts principais do projeto.
-    -   **`downloadtiktok.py`**: Script para baixar vídeos do TikTok.
-    -   **`downloadyoutube.py`**: Script para baixar vídeos do YouTube com base em termos de pesquisa.
-    -   **`downloadyoutube24henviadoemaisvistos.py`**: Script para baixar os vídeos mais vistos no YouTube nas últimas 24 horas.
-    -   **`postautomaticoyoutube.py`**: Script para fazer o upload de vídeos para o YouTube.
+-   **`credenciais/`**: Armazena as credenciais da API do Google.
 -   **`downloads/`**: Pasta onde os vídeos baixados são salvos.
 -   **`requirements.txt`**: Lista as dependências do Python.
 
@@ -70,28 +66,20 @@ Siga os passos abaixo para configurar o ambiente do projeto:
     ```
 
 2.  **Crie e Ative o Ambiente Virtual**:
-    É uma boa prática usar um ambiente virtual para isolar as dependências do projeto.
 
     ```bash
-    # Crie o ambiente virtual
     python -m venv venv
-
-    # Ative o ambiente (Linux/macOS)
-    source venv/bin/activate
-
-    # Ative o ambiente (Windows)
-    .\venv\Scripts\activate
+    source venv/bin/activate  # Linux/macOS
+    .\venv\Scripts\activate  # Windows
     ```
 
 3.  **Instale as Dependências**:
-    As dependências estão listadas no arquivo `requirements.txt`.
 
     ```bash
     pip install -r requirements.txt
     ```
 
 4.  **Instale os Navegadores do Playwright**:
-    O Playwright requer que os navegadores que ele controla sejam instalados.
 
     ```bash
     playwright install
@@ -105,7 +93,7 @@ Siga os passos abaixo para configurar o ambiente do projeto:
     3.  Ative a **API de Dados do YouTube v3**.
     4.  Crie credenciais do tipo **"Tela de consentimento OAuth"** e configure-a.
     5.  Crie credenciais do tipo **"ID do cliente OAuth"** para um aplicativo **"Computador"**.
-    6.  Baixe o arquivo JSON das credenciais e renomeie-o para `credentials.json` na pasta `controles`.
+    6.  Baixe o arquivo JSON das credenciais e salve-o como `credentials.json` dentro da pasta `credenciais/`.
 
 ### 3. Execução dos Scripts
 
@@ -127,14 +115,8 @@ cd controles
     python downloadyoutube.py
     ```
 
--   **Para baixar os mais vistos do YouTube**:
-
-    ```bash
-    python downloadyoutube24hmaisvistos.py
-    ```
-
 -   **Para fazer o upload para o YouTube**:
-    A primeira vez que você executar, será necessário autorizar o aplicativo através do seu navegador.
+    A primeira vez que você executar, será necessário autorizar o aplicativo através do seu navegador. O token de acesso será salvo em `credenciais/youtube_token.pickle`.
 
     ```bash
     python postautomaticoyoutube.py

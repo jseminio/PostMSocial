@@ -2,14 +2,10 @@
 venv/
 
 # Arquivos de vídeo baixados
-*.mp4
-*.avi
-*.mov
-*.mkv
+downloads/
 
 # Credenciais e tokens
-credentials.json
-*.pickle
+credenciais/
 
 # Arquivos de cache do Python
 __pycache__/

@@ -16,8 +16,8 @@ def buscar_links_youtube(termos, quantidade_de_links_validos=5):
         page = browser.new_page()
         for termo in termos:
             print(f"\nBuscando vídeos para: {termo}")
-            # url = f"https://www.youtube.com/results?search_query={termo}&sp=EgQIBRAB"  # Filtro: Hoje + Ordenar por: Visualizações
-            url = f"https://www.youtube.com/results?search_query={termo}&sp=CAISBAgFEAE%253D"  # Filtro: Este Ano + Ordenar por: Visualizações
+            url = f"https://www.youtube.com/results?search_query={termo}&sp=EgQIBRAB"  # Filtro: Hoje + Ordenar por: Visualizações
+            # url = f"https://www.youtube.com/results?search_query={termo}&sp=CAISBAgFEAE%253D"  # Filtro: Hoje + Ordenar por: Visualizações
             print(f"URL: {url}")
             page.goto(url)
             time.sleep(2)
@@ -102,6 +102,14 @@ def baixar_videos(links):
             print(f"Erro ao baixar {link}: {e}")
 
 def main():
+    """
+    Função principal que gerencia a busca e o download de vídeos do YouTube.
+
+    Este loop interativo solicita ao usuário os termos de busca e a quantidade de vídeos desejada.
+    Ele chama a função `buscar_links_youtube` para obter a lista de vídeos, exibe os detalhes
+    de cada vídeo encontrado e, em seguida, chama `baixar_videos` para iniciar o download.
+    O processo se repete até que o usuário decida sair.
+    """
     while True:
         print("\nDigite os termos (hashtags ou palavras) para buscar vídeos no YouTube, separados por vírgula (ex: futebol,tecnologia):")
         termos_input = input().strip()

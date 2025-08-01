@@ -1,0 +1,11 @@
+# Define o comportamento padrão para todos os arquivos
+* text=auto
+
+# Garante que arquivos de texto comuns tenham terminações de linha consistentes
+*.py text
+*.md text
+*.txt text
+.gitignore text
+
+# Garante que scripts de shell tenham terminações LF (padrão Unix)
+*.sh text eol=lf
