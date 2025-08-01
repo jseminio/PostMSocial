@@ -1,0 +1,7 @@
+venv/
+*.mp4
+*.avi
+*.mov
+*.mkv
+credentials.json
+*.pickle
