@@ -1,0 +1,32 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+}
+
+nav {
+    background-color: #333;
+    padding: 1rem;
+}
+
+nav a {
+    color: white;
+    margin-right: 1rem;
+    text-decoration: none;
+}
+
+.container {
+    padding: 2rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+}
+
+pre {
+    background-color: #eee;
+    padding: 1rem;
+    white-space: pre-wrap;
+}

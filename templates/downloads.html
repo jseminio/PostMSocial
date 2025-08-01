@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Vídeos Baixados{% endblock %}
+{% block content %}
+    <h1>Vídeos Baixados</h1>
+    <div class="gallery">
+        {% for video in videos %}
+            <div class="video-item">
+                <a href="{{ url_for('static', filename='downloads/' + video) }}" target="_blank">{{ video }}</a>
+            </div>
+        {% else %}
+            <p>Nenhum vídeo encontrado na pasta de downloads.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

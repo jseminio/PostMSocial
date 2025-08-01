@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %}Upload para YouTube{% endblock %}
+{% block content %}
+    <h1>Upload para YouTube</h1>
+    <p>Esta página irá iniciar o processo de upload de todos os vídeos na pasta de downloads.</p>
+    <form action="/run-upload" method="post">
+        <button type="submit">Iniciar Upload</button>
+    </form>
+    <h2>Log de Atividades</h2>
+    <pre id="log"></pre>
+{% endblock %}

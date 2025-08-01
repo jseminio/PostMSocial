@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}YouTube Downloader{% endblock %}
+{% block content %}
+    <h1>YouTube Downloader</h1>
+    <form action="/run-youtube-download" method="post">
+        <label for="terms">Termos de busca (separados por vírgula):</label>
+        <input type="text" id="terms" name="terms" required>
+        <label for="quantity">Quantidade de vídeos por termo:</label>
+        <input type="number" id="quantity" name="quantity" value="5" required>
+        <button type="submit">Baixar Vídeos</button>
+    </form>
+    <h2>Log de Atividades</h2>
+    <pre id="log"></pre>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}TikTok Downloader{% endblock %}
+{% block content %}
+    <h1>TikTok Downloader</h1>
+    <form action="/run-tiktok-download" method="post">
+        <label for="hashtags">Hashtags (separadas por vírgula):</label>
+        <input type="text" id="hashtags" name="hashtags" required>
+        <label for="quantity">Quantidade de vídeos por hashtag:</label>
+        <input type="number" id="quantity" name="quantity" value="5" required>
+        <button type="submit">Baixar Vídeos</button>
+    </form>
+    <h2>Log de Atividades</h2>
+    <pre id="log"></pre>
+{% endblock %}
