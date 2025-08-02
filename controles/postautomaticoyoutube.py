@@ -1,6 +1,8 @@
 import os
 import pickle
 import glob
+import shutil
+from datetime import datetime
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -32,7 +34,7 @@ def get_authenticated_service():
             pickle.dump(creds, token)
     return build("youtube", "v3", credentials=creds)
 
-def upload_video(youtube, file_path, title, description="", tags=None, categoryId="22", privacyStatus="private"):
+def upload_video(youtube, file_path, title, description="", tags=None, categoryId="22", privacyStatus="public"):
     """
     Faz o upload de um arquivo de vídeo para o YouTube.
     """
@@ -65,6 +67,28 @@ def upload_video(youtube, file_path, title, description="", tags=None, categoryI
         return None
     return response
 
+# Define o diretório base para vídeos enviados
+UPLOADED_DIR = os.path.join(BASE_DIR, "../enviado")
+
+def move_uploaded_video(file_path, social_network):
+    """
+    Move o vídeo enviado para a pasta de destino com a estrutura de data.
+    """
+    today = datetime.now()
+    date_path = today.strftime("%d%m%Y") # Formato DDMMYYYY
+    
+    target_dir = os.path.join(UPLOADED_DIR, date_path, social_network)
+    os.makedirs(target_dir, exist_ok=True)
+    
+    file_name = os.path.basename(file_path)
+    target_path = os.path.join(target_dir, file_name)
+    
+    try:
+        shutil.move(file_path, target_path)
+        print(f"✅ Vídeo movido para: {target_path}")
+    except Exception as e:
+        print(f"❌ Erro ao mover o vídeo {file_name}: {e}")
+
 def run_youtube_uploader():
     """
     Executa o processo de upload de todos os vídeos na pasta de downloads para o YouTube.
@@ -79,15 +103,17 @@ def run_youtube_uploader():
     for video in video_files:
         title = os.path.splitext(os.path.basename(video))[0]
         print(f"\n🚀 Iniciando upload do vídeo: {title}")
-        upload_video(
+        response = upload_video(
             youtube,
             video,
             title=title,
             description="Upload automático via API",
             tags=["automático", "youtube", "api"],
             categoryId="22",
-            privacyStatus="private"
+            privacyStatus="public"
         )
+        if response: # Only move if upload was successful
+            move_uploaded_video(video, "youtube")
     print("\nProcesso de upload concluído.")
 
 if __name__ == '__main__':
