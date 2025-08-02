@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Cortes para Shorts/TikTok{% endblock %}
+{% block content %}
+    <h1>Cortes para Shorts/TikTok</h1>
+    <h4>Clique no vídeo para gerar os cortes</h4>
+    <div class="gallery">
+        {% for video in videos %}
+            <div class="video-item">
+                <a href="{{ url_for('gerar_cortes', filename=video.safe) }}">{{ video.original }}</a>
+            </div>
+        {% else %}
+            <p>Nenhum vídeo encontrado na pasta de downloads.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
