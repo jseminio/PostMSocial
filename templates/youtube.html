@@ -112,11 +112,16 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'started') {
+                    // Clear any existing interval and set short interval for active task
+                    if (statusInterval) clearInterval(statusInterval);
                     statusInterval = setInterval(updateStatus, 2000);
                 } else {
                     messageArea.style.color = 'red';
                     messageArea.textContent = 'Falha ao iniciar o download.';
                     downloadButton.disabled = false;
+                    // Revert to long interval if task failed to start
+                    if (statusInterval) clearInterval(statusInterval);
+                    statusInterval = setInterval(updateStatus, 3000);
                 }
             })
             .catch(error => {
@@ -129,5 +134,7 @@
 
         // Initial status check when page loads
         updateStatus();
+        // Set a long interval for background updates when no task is running
+        setInterval(updateStatus, 300000);
     </script>
 {% endblock %}

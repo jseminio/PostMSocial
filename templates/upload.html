@@ -4,23 +4,164 @@
     <h1>Upload para YouTube</h1>
     <p>Esta página irá iniciar o processo de upload de todos os vídeos na pasta de downloads.</p>
     <form id="upload-form">
-        <button type="submit">Iniciar Upload</button>
+        <button type="submit" id="upload-button">Iniciar Upload</button>
     </form>
+    <div id="message-area" style="margin-top: 10px; font-weight: bold;"></div>
     <h2>Log de Atividades</h2>
     <pre id="log"></pre>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <p id="modal-message"></p>
+        </div>
+    </div>
+
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 500px;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+
     <script>
-        document.getElementById('upload-form').addEventListener('submit', function(event) {
+        const form = document.getElementById('upload-form');
+        const uploadButton = document.getElementById('upload-button');
+        const logArea = document.getElementById('log');
+        const messageArea = document.getElementById('message-area');
+        const modal = document.getElementById('myModal');
+        const modalMessage = document.getElementById('modal-message');
+        const closeButton = document.getElementsByClassName('close-button')[0];
+        let statusInterval;
+
+        // When the user clicks on <span> (x), close the modal
+        closeButton.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function showModal(message, isError = false) {
+            modalMessage.textContent = message;
+            modalMessage.style.color = isError ? 'red' : 'green';
+            modal.style.display = "block";
+        }
+
+        function hideModal() {
+            modal.style.display = "none";
+        }
+
+        function updateStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    logArea.textContent = data.log;
+
+                    if (data.running) {
+                        uploadButton.disabled = true;
+                        messageArea.style.color = 'orange';
+                        messageArea.textContent = 'Processando... Por favor, aguarde.';
+                    } else {
+                        // Process finished
+                        uploadButton.disabled = false;
+                        clearInterval(statusInterval); // Stop polling
+                        messageArea.textContent = ''; // Clear processing message
+
+                        if (data.message) {
+                            showModal(data.message, false); // Show success modal
+                        } else if (data.error) {
+                            showModal(data.error, true); // Show error modal
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar status:', error);
+                    messageArea.style.color = 'red';
+                    messageArea.textContent = 'Erro ao conectar com o servidor de status.';
+                    uploadButton.disabled = false;
+                    clearInterval(statusInterval);
+                    showModal('Erro ao conectar com o servidor de status.', true);
+                });
+        }
+
+        form.addEventListener('submit', function(event) {
             event.preventDefault();
+            hideModal(); // Hide any existing modal
+
+            messageArea.textContent = ''; // Clear previous messages
+            logArea.textContent = ''; // Clear previous log
+            uploadButton.disabled = true;
+            messageArea.style.color = 'orange';
+            messageArea.textContent = 'Iniciando upload...';
+
             fetch('/run-upload', {
                 method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    statusInterval = setInterval(updateStatus, 300000);
+                } else {
+                    messageArea.style.color = 'red';
+                    messageArea.textContent = 'Falha ao iniciar o upload.';
+                    uploadButton.disabled = false;
+                    showModal('Falha ao iniciar o upload.', true);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao iniciar upload:', error);
+                messageArea.style.color = 'red';
+                messageArea.textContent = 'Erro ao enviar requisição de upload.';
+                uploadButton.disabled = false;
+                showModal('Erro ao enviar requisição de upload.', true);
             });
-            setInterval(function() {
-                fetch('/status')
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('log').textContent = data.log;
-                    });
-            }, 2000);
         });
+
+        // Initial status check when page loads
+        updateStatus();
+        // Set a long interval for background updates when no task is running
+        // This will be cleared and reset to a shorter interval when a task starts
+        statusInterval = setInterval(updateStatus, 300000);
     </script>
 {% endblock %}

@@ -112,7 +112,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'started') {
-                    statusInterval = setInterval(updateStatus, 2000);
+                    statusInterval = setInterval(updateStatus, 3000);
                 } else {
                     messageArea.style.color = 'red';
                     messageArea.textContent = 'Falha ao iniciar o download.';
@@ -129,5 +129,8 @@
 
         // Initial status check when page loads
         updateStatus();
+        // Set a long interval for background updates when no task is running
+        // This will be cleared and reset to a shorter interval when a task starts
+        statusInterval = setInterval(updateStatus, 300000);
     </script>
 {% endblock %}
