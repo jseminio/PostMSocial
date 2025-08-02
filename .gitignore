@@ -26,3 +26,28 @@ __pycache__/
 # Arquivos de sistema operacional
 .DS_Store
 Thumbs.db
+
+# Ignora vídeos em qualquer subpasta
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.mkv
+*.flv
+*.webm
+# Outros exemplos úteis
+*.ogg
+*.mp3
+*.wav
+*.zip
+*.rar
+*.7z
+*.tar
+*.iso
+*.exe
+*.dll
+
+# Ignora ambientes virtuais Python
+venv/
+.venv/
+__pycache__/
